@@ -1,0 +1,74 @@
+---
+title: "SVM Implementation"
+author: "Jakub Bejnarowicz"
+date: "3/1/2018"
+output:
+  html_document:
+    df_print: paged
+---
+```{r init}
+library(e1071)
+library(ROCR)
+library(rpart)
+
+data <- read.csv("tic-tac-toe.data", header = F, strip.white = T)
+colnames(data) <- c(1:9, "win_x")
+n = nrow(data)
+data <- data[sample(n),]
+train <- data[1:round(0.7*n),]
+test <- data[(round(0.7*n)+1):n,]
+
+# Train SVM
+model <- svm(win_x ~ ., data=train)
+
+# Predict svm fitted model on test data
+pred <- predict(model, test, type = "prob")
+
+# Confusion table
+conf <- table(test$win_x, pred)
+
+```
+## Wymagania
+UCI Machine Learning Repository: Tic-Tac-Toe Endgame Data Set
+https://archive.ics.uci.edu/ml/datasets/Tic-Tac-Toe+Endgame
+2. zbuduj model SVM
+3. wczytać plik z danymi; zbiór testowy/uczący; wybrać metodę;
+4: wypisać zmienne istotne (p-value 0,001 (gwiazdki)); ocenić klasyfikator (model) pole pod wykresem AUC;
+5: wykres AUC; opisane osie; modyfikacja wykresu: tytuł;
+KOMENTARZ wnioski, 5 zdań. W modelowaniu zmienne istotne to; Ta zmienna ma wpływ; To zależy od tamtego.
+
+## Prerequiments
+```
+install.packages("e1071")
+```
+
+## Struktura danych
+
+Attribute Information: x=player x has taken, o=player o has taken, b=blank)
+
+1. top-left-square: {x,o,b}
+2. top-middle-square: {x,o,b}
+3. top-right-square: {x,o,b}
+4. middle-left-square: {x,o,b}
+5. middle-middle-square: {x,o,b}
+6. middle-right-square: {x,o,b}
+7. bottom-left-square: {x,o,b}
+8. bottom-middle-square: {x,o,b}
+9. bottom-right-square: {x,o,b}
+10. Class: {positive,negative}
+
+Class Distribution: About 65.3% are positive (i.e., wins for "x")
+
+## Modelowanie
+```{r model,
+summary(model)
+```
+
+Confusion table
+```{r conf, echo=F}
+conf
+```
+
+```{r pressure, echo=F}
+plot(pressure)
+```
